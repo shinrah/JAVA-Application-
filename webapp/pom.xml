@@ -3,31 +3,38 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
          http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.example.maven-project</groupId>
-    <artifactId>maven-project</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
+  <groupId>com.example.maven-project</groupId>
+  <artifactId>webapp</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>war</packaging>
 
-    <name>Maven Project</name>
+  <name>Webapp</name>
 
-    <!-- ONLY HERE -->
-    <modules>
-        <module>server</module>
-        <module>webapp</module>
-    </modules>
+  <distributionManagement>
+    <repository>
+      <id>nexus</id>
+      <url>http://192.168.1.6:8081/repository/maven-local/</url>
+    </repository>
+    <snapshotRepository>
+      <id>nexus</id>
+      <url>http://192.168.1.6:8081/repository/maven-local/</url>
+    </snapshotRepository>
+  </distributionManagement>
 
-    <!-- Nexus Deployment -->
-    <distributionManagement>
-        <repository>
-            <id>nexus</id>
-            <url>http://192.168.1.6:8081/repository/maven-local/</url>
-        </repository>
-        <snapshotRepository>
-            <id>nexus</id>
-            <url>http://192.168.1.6:8081/repository/maven-local/</url>
-        </snapshotRepository>
-    </distributionManagement>
+  <dependencies>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>jsp-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 
 </project>
