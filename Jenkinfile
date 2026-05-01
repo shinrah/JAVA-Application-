@@ -66,8 +66,9 @@ pipeline {
         }
     }
 
-    post {
-        always {
+   post {
+    always {
+        node('slave') {
             cleanWs()
         }
     }
