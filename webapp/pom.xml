@@ -12,7 +12,7 @@
 
     <name>Maven Project</name>
 
-    <!-- Modules (ONLY here, not in child POMs) -->
+    <!-- ONLY HERE -->
     <modules>
         <module>server</module>
         <module>webapp</module>
