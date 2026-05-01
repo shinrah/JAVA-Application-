@@ -34,8 +34,8 @@ pipeline {
         }
 
         stage('build the maven project') {
-         agent { label 'slave' }
-           steps {
+            agent { label 'slave' }
+            steps {
                 dir("${env.WEB}") {
                     sh 'mvn clean deploy'
                 }
@@ -43,6 +43,7 @@ pipeline {
         }
 
         stage('test the project') {
+            agent { label 'slave' }   // ✅ required because agent none at top
             steps {
                 sh 'mvn test'
             }
