@@ -1,0 +1,61 @@
+pipeline {
+    agent { label 'slave' }
+
+    tools {
+        maven 'maven'
+    }
+
+    stages {
+        stage('clean workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
+        stage('clone the git repo') {
+            steps {
+                git branch: 'main', credentialsId: 'slave', url: 'https://github.com/shinrah/JAVA-Application-.git'
+            }
+        }
+
+        stage('build the maven project') {
+            steps {
+                dir('webapp') {
+                sh 'mvn clean deploy'
+            }
+        }
+        }
+
+        stage('test the project') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage('sonar scan') {
+            steps {
+                withSonarQubeEnv('sonar') {
+                    sh 'mvn sonar:sonar'
+                }
+            }
+        }
+
+    //     stage ('sonar quality gate') {
+    //         steps {
+    //              // waitForQualityGate abortPipeline: true
+    //         }
+    //     }
+
+        stage ('archive the artifact') {
+            steps {
+                archiveArtifacts 'webapp/target/*.war'
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}
