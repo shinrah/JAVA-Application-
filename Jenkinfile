@@ -7,6 +7,7 @@ pipeline {
 
     environment {
         WEB = 'webapp'
+        git_url = 'https://github.com/shinrah/JAVA-Application-.git'
     }
 
     parameters {
@@ -22,7 +23,7 @@ pipeline {
 
         stage('clone the git repo') {
             steps {
-                git branch: $git_branch, url: 'https://github.com/shinrah/JAVA-Application-.git'
+                git branch: {$env.git_branch}, url: $env.git_url
             }
         }
 
