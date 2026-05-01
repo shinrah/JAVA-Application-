@@ -12,19 +12,23 @@
 
     <name>Webapp</name>
 
-    <!-- Nexus Deployment -->
+    <!-- CORRECT DEPLOYMENT -->
     <distributionManagement>
+
+        <!-- Releases -->
         <repository>
             <id>nexus</id>
-            <url>http://192.168.1.6:8081/repository/maven-local/</url>
+            <url>http://192.168.1.6:8081/repository/maven-releases/</url>
         </repository>
+
+        <!-- Snapshots -->
         <snapshotRepository>
             <id>nexus</id>
-            <url>http://192.168.1.6:8081/repository/maven-local/</url>
+            <url>http://192.168.1.6:8081/repository/maven-snapshots/</url>
         </snapshotRepository>
+
     </distributionManagement>
 
-    <!-- Dependencies -->
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>
