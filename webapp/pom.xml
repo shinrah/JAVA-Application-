@@ -12,21 +12,18 @@
 
     <name>Maven Project</name>
 
-    <!-- Modules -->
+    <!-- Modules (ONLY here, not in child POMs) -->
     <modules>
         <module>server</module>
         <module>webapp</module>
     </modules>
 
-    <!-- IMPORTANT: Nexus deployment -->
+    <!-- Nexus Deployment -->
     <distributionManagement>
-        <!-- for releases -->
         <repository>
             <id>nexus</id>
             <url>http://192.168.1.6:8081/repository/maven-local/</url>
         </repository>
-
-        <!-- for snapshots -->
         <snapshotRepository>
             <id>nexus</id>
             <url>http://192.168.1.6:8081/repository/maven-local/</url>
