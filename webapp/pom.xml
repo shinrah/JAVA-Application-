@@ -18,12 +18,19 @@
         <module>webapp</module>
     </modules>
 
-    <!-- Nexus Deployment Configuration -->
+    <!-- IMPORTANT: Nexus deployment -->
     <distributionManagement>
+        <!-- for releases -->
         <repository>
             <id>nexus</id>
             <url>http://192.168.1.6:8081/repository/maven-local/</url>
         </repository>
+
+        <!-- for snapshots -->
+        <snapshotRepository>
+            <id>nexus</id>
+            <url>http://192.168.1.6:8081/repository/maven-local/</url>
+        </snapshotRepository>
     </distributionManagement>
 
 </project>
