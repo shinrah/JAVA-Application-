@@ -23,7 +23,7 @@ pipeline {
 
         stage('clone the git repo') {
             steps {
-                git branch: {$env.git_branch}, url: $env.git_url
+                git branch: {param.git_branch}, url: $env.git_url
             }
         }
 
