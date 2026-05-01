@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'slave' }
+    agent none
 
     tools {
         maven 'maven'
@@ -20,18 +20,21 @@ pipeline {
 
     stages {
         stage('clean workspace') {
+            agent { label 'slave' }
             steps {
                 cleanWs()
             }
         }
 
         stage('clone the git repo') {
+            agent { label 'slave' }
             steps {
                 git branch: "${params.git_branch}", url: "${env.git_url}"
             }
         }
 
         stage('build the maven project') {
+            agent { label 'slave' }
             steps {
                 dir("${env.WEB}") {
                     sh 'mvn clean deploy'
@@ -40,12 +43,14 @@ pipeline {
         }
 
         stage('test the project') {
+            agent { label 'slave' }
             steps {
                 sh 'mvn test'
             }
         }
 
         stage('sonar scan') {
+            agent { label 'slave' }
             steps {
                 withSonarQubeEnv('sonar') {
                     sh 'mvn sonar:sonar'
@@ -54,6 +59,7 @@ pipeline {
         }
 
         stage('archive the artifact') {
+            agent { label 'slave' }
             steps {
                 archiveArtifacts artifacts: 'webapp/target/*.war'
             }
