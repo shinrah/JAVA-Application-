@@ -22,7 +22,7 @@ pipeline {
 
         stage('clone the git repo') {
             steps {
-                git branch: 'main', credentialsId: 'slave', url: 'https://github.com/shinrah/JAVA-Application-.git'
+                git branch: $git_branch, url: 'https://github.com/shinrah/JAVA-Application-.git'
             }
         }
 
@@ -32,7 +32,6 @@ pipeline {
                     sh 'mvn clean deploy'
                 }
             }
-        }
         }
 
         stage('test the project') {
