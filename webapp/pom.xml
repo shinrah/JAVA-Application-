@@ -40,5 +40,11 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-
+<distributionManagement>
+  <repository>
+    <id>nexus</id>
+    <url>http://localhost:8081/repository/maven-local/</url>
+  </repository>
+</distributionManagement>
 </project>
+
