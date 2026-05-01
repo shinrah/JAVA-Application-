@@ -5,6 +5,14 @@ pipeline {
         maven 'maven'
     }
 
+    environment {
+        WEB = 'webapp'
+    }
+
+    parameters {
+    choice choices: ['main', 'dev', 'master'], description: 'select the branch name', name: 'git_branch'
+      }
+
     stages {
         stage('clean workspace') {
             steps {
@@ -20,8 +28,9 @@ pipeline {
 
         stage('build the maven project') {
             steps {
-                dir('webapp') {
-                sh 'mvn clean deploy'
+                dir("${WEB}") {
+                    sh 'mvn clean deploy'
+                }
             }
         }
         }
