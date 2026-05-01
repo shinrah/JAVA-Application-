@@ -11,8 +11,12 @@ pipeline {
     }
 
     parameters {
-    choice choices: ['main', 'dev', 'master'], description: 'select the branch name', name: 'git_branch'
-      }
+        choice(
+            name: 'git_branch',
+            choices: ['main', 'dev', 'master'],
+            description: 'select the branch name'
+        )
+    }
 
     stages {
         stage('clean workspace') {
@@ -23,13 +27,13 @@ pipeline {
 
         stage('clone the git repo') {
             steps {
-                git branch: {param.git_branch}, url: $env.git_url
+                git branch: "${params.git_branch}", url: "${env.git_url}"
             }
         }
 
         stage('build the maven project') {
             steps {
-                dir("${WEB}") {
+                dir("${env.WEB}") {
                     sh 'mvn clean deploy'
                 }
             }
@@ -49,15 +53,9 @@ pipeline {
             }
         }
 
-    //     stage ('sonar quality gate') {
-    //         steps {
-    //              // waitForQualityGate abortPipeline: true
-    //         }
-    //     }
-
-        stage ('archive the artifact') {
+        stage('archive the artifact') {
             steps {
-                archiveArtifacts 'webapp/target/*.war'
+                archiveArtifacts artifacts: 'webapp/target/*.war'
             }
         }
     }
@@ -66,5 +64,5 @@ pipeline {
         always {
             cleanWs()
         }
-        }
     }
+}
