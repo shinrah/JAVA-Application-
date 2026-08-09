@@ -1,3 +1,7 @@
-FROM tomcat:9-jdk17
-COPY target/*.war /usr/local/tomcat/webapps/
-EXPOSE 8086
+FROM nginx:latest
+
+COPY index.html /usr/share/nginx/html/index.html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
