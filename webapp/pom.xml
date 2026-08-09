@@ -10,21 +10,18 @@
     <groupId>com.example.maven-project</groupId>
     <artifactId>maven-project</artifactId>
     <version>1.0-SNAPSHOT</version>
-
     <packaging>pom</packaging>
 
     <name>Maven Project</name>
 
-    <!-- Nexus Repository Configuration -->
+    <!-- Nexus Configuration -->
     <distributionManagement>
 
-        <!-- Release Repository -->
         <repository>
             <id>nexus</id>
             <url>http://192.168.1.4:8081/repository/maven-releases/</url>
         </repository>
 
-        <!-- Snapshot Repository -->
         <snapshotRepository>
             <id>nexus</id>
             <url>http://192.168.1.4:8081/repository/maven-snapshots/</url>
@@ -32,6 +29,7 @@
 
     </distributionManagement>
 
+    <!-- Child Modules -->
     <modules>
         <module>server</module>
         <module>webapp</module>
