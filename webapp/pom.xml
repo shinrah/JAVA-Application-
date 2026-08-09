@@ -8,31 +8,29 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example.maven-project</groupId>
-    <artifactId>maven-project</artifactId>
+    <artifactId>webapp</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
 
-    <name>Maven Project</name>
+    <packaging>war</packaging>
 
-    <!-- Nexus Configuration -->
-    <distributionManagement>
+    <name>Webapp</name>
 
-        <repository>
-            <id>nexus</id>
-            <url>http://192.168.1.4:8081/repository/maven-releases/</url>
-        </repository>
+    <dependencies>
 
-        <snapshotRepository>
-            <id>nexus</id>
-            <url>http://192.168.1.4:8081/repository/maven-snapshots/</url>
-        </snapshotRepository>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
 
-    </distributionManagement>
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.1</version>
+            <scope>provided</scope>
+        </dependency>
 
-    <!-- Child Modules -->
-    <modules>
-        <module>server</module>
-        <module>webapp</module>
-    </modules>
+    </dependencies>
 
 </project>
