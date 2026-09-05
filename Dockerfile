@@ -1,4 +1,4 @@
-FROM tomcat:9-jdk8-alpine
+FROM tomcat:9-jdk8
 
 RUN rm -rf /usr/local/tomcat/webapps/*
 
