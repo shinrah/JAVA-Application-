@@ -1,5 +1,7 @@
-FROM tomcat:9-jdk17
-COPY 
-webapp/*.war /usr/local/tomcat/webapps/
-EXPOSE 8086
+FROM tomcat:9-jdk8
 
+COPY webapp/target/webapp-1.0-SNAPSHOT.war /usr/local/tomcat/webapps/ROOT.war
+
+EXPOSE 8080
+
+CMD ["catalina.sh", "run"]
