@@ -170,6 +170,19 @@ echo "Terraform Version:"
 terraform version
 
 # ==========================================
+# Step 8: Install Ansible Docker Collection
+# ==========================================
+
+echo "Installing Ansible Docker collection..."
+
+ansible-galaxy collection install community.docker
+
+echo "Ansible Docker collection installed."
+
+# ==========================================
+# Step 9: Verify Ansible
+# ==========================================
+# ==========================================
 # Step 8: Cleanup
 # ==========================================
 
