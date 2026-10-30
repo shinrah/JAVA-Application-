@@ -1,45 +1,6 @@
+
 #!/bin/bash
-set -Eeuo pipefail
 
-# Check root privileges
-if [ "$(id -u)" -ne 0 ]; then
-    echo "Re-executing script with root privileges..."
-    exec sudo -n bash "$0" "$@"
-fi
-
-# ==========================================
-# Configure Jenkins Passwordless Sudo Access
-# ==========================================
-
-JENKINS_USER="jenkins"
-
-if id "$JENKINS_USER" >/dev/null 2>&1; then
-
-    echo "Configuring sudo access for Jenkins..."
-
-    SUDOERS_FILE="/etc/sudoers.d/jenkins"
-    TEMP_FILE=$(mktemp)
-
-    printf '%s ALL=(ALL) NOPASSWD: ALL\n' "$JENKINS_USER" > "$TEMP_FILE"
-
-    # Validate configuration before installing
-    visudo -cf "$TEMP_FILE"
-
-    # Install with correct ownership and permissions
-    install -o root -g root -m 0440 "$TEMP_FILE" "$SUDOERS_FILE"
-
-    rm -f "$TEMP_FILE"
-
-    echo "Jenkins sudo access configured successfully."
-
-else
-    echo "ERROR: Jenkins user does not exist."
-    exit 1
-fi
-
-# ==========================================
-# Continue with existing installation steps
-# ==========================================
 set -Eeuo pipefail
 
 # ==========================================
@@ -53,20 +14,30 @@ echo " Installing DevOps Tools"
 echo " Ubuntu 24.04"
 echo "======================================"
 
-# Automatically request root privileges
+# ==========================================
+# Step 0: Check and obtain root privileges
+# ==========================================
+
 if [ "$(id -u)" -ne 0 ]; then
+
+    echo "Checking Jenkins sudo permissions..."
+
+    if ! sudo -n true 2>/dev/null; then
+        echo "ERROR: Passwordless sudo is not configured."
+        echo "Configure Jenkins sudo access during server provisioning."
+        exit 1
+    fi
+
     echo "Re-executing script with root privileges..."
     exec sudo -n bash "$0" "$@"
 fi
 
-set -Eeuo pipefail
+echo "Running with root privileges."
 
-echo "======================================"
-echo " Installing DevOps Tools"
-echo " Ubuntu 24.04"
-echo "======================================"
+# ==========================================
+# Step 1: Detect architecture
+# ==========================================
 
-# Detect architecture
 ARCH=$(dpkg --print-architecture)
 
 case "$ARCH" in
@@ -88,7 +59,7 @@ echo "Detected architecture: $ARCH"
 export DEBIAN_FRONTEND=noninteractive
 
 # ==========================================
-# Step 1: Update package repository
+# Step 2: Update package repository
 # ==========================================
 
 echo "Updating package repository..."
@@ -96,7 +67,7 @@ echo "Updating package repository..."
 apt-get update -y
 
 # ==========================================
-# Step 2: Install dependencies and Git
+# Step 3: Install dependencies and Git
 # ==========================================
 
 echo "Installing dependencies and Git..."
@@ -110,10 +81,10 @@ apt-get install -y \
     ca-certificates \
     lsb-release
 
-echo "Git installation completed"
+echo "Git installation completed."
 
 # ==========================================
-# Step 3: Install kubectl
+# Step 4: Install kubectl
 # ==========================================
 
 echo "Installing kubectl..."
@@ -129,10 +100,10 @@ curl -fL --retry 3 \
 
 install -m 0755 /tmp/kubectl /usr/local/bin/kubectl
 
-echo "kubectl installation completed"
+echo "kubectl installation completed."
 
 # ==========================================
-# Step 4: Install eksctl
+# Step 5: Install eksctl
 # ==========================================
 
 echo "Installing eksctl..."
@@ -147,10 +118,10 @@ tar -xzf /tmp/eksctl.tar.gz -C /tmp
 
 install -m 0755 /tmp/eksctl /usr/local/bin/eksctl
 
-echo "eksctl installation completed"
+echo "eksctl installation completed."
 
 # ==========================================
-# Step 5: Install Terraform
+# Step 6: Install Terraform
 # ==========================================
 
 echo "Installing Terraform..."
@@ -171,10 +142,10 @@ apt-get update -y
 
 apt-get install -y terraform
 
-echo "Terraform installation completed"
+echo "Terraform installation completed."
 
 # ==========================================
-# Step 6: Verify all installations
+# Step 7: Verify all installations
 # ==========================================
 
 echo ""
@@ -199,7 +170,7 @@ echo "Terraform Version:"
 terraform version
 
 # ==========================================
-# Step 7: Cleanup
+# Step 8: Cleanup
 # ==========================================
 
 rm -f /tmp/kubectl /tmp/eksctl.tar.gz /tmp/eksctl
@@ -208,4 +179,3 @@ echo ""
 echo "======================================"
 echo " Installation Completed Successfully"
 echo "======================================"
-
