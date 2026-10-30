@@ -1,6 +1,47 @@
 #!/bin/bash
 set -Eeuo pipefail
 
+# Check root privileges
+if [ "$(id -u)" -ne 0 ]; then
+    echo "Re-executing script with root privileges..."
+    exec sudo -n bash "$0" "$@"
+fi
+
+# ==========================================
+# Configure Jenkins Passwordless Sudo Access
+# ==========================================
+
+JENKINS_USER="jenkins"
+
+if id "$JENKINS_USER" >/dev/null 2>&1; then
+
+    echo "Configuring sudo access for Jenkins..."
+
+    SUDOERS_FILE="/etc/sudoers.d/jenkins"
+    TEMP_FILE=$(mktemp)
+
+    printf '%s ALL=(ALL) NOPASSWD: ALL\n' "$JENKINS_USER" > "$TEMP_FILE"
+
+    # Validate configuration before installing
+    visudo -cf "$TEMP_FILE"
+
+    # Install with correct ownership and permissions
+    install -o root -g root -m 0440 "$TEMP_FILE" "$SUDOERS_FILE"
+
+    rm -f "$TEMP_FILE"
+
+    echo "Jenkins sudo access configured successfully."
+
+else
+    echo "ERROR: Jenkins user does not exist."
+    exit 1
+fi
+
+# ==========================================
+# Continue with existing installation steps
+# ==========================================
+set -Eeuo pipefail
+
 # ==========================================
 # DevOps Tools Installation Script
 # OS: Ubuntu 24.04 LTS
