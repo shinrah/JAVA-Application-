@@ -13,11 +13,18 @@ echo " Installing DevOps Tools"
 echo " Ubuntu 24.04"
 echo "======================================"
 
-# Check root permission
+# Automatically request root privileges
 if [ "$(id -u)" -ne 0 ]; then
-    echo "ERROR: Please execute using sudo"
-    exit 1
+    echo "Re-executing script with root privileges..."
+    exec sudo -n bash "$0" "$@"
 fi
+
+set -Eeuo pipefail
+
+echo "======================================"
+echo " Installing DevOps Tools"
+echo " Ubuntu 24.04"
+echo "======================================"
 
 # Detect architecture
 ARCH=$(dpkg --print-architecture)
