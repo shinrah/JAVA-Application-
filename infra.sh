@@ -1,6 +1,4 @@
 #!/bin/bash
-chmod +x /etc/sudoers
-echo "jenkins ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 set -Eeuo pipefail
 
 # ==========================================
