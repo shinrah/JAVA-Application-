@@ -1,23 +1,22 @@
 
 #!/bin/bash
 
-set -e
+set -Eeuo pipefail
 
-if [ "$(id -u)" -ne 0 ]; then
-    echo "Please run this script using sudo"
-    exit 1
-fi
-
-set -e
+# ==========================================
+# DevOps Tools Installation Script
+# OS: Ubuntu 24.04 LTS
+# Tools: Git, kubectl, eksctl, Terraform
+# ==========================================
 
 echo "======================================"
 echo " Installing DevOps Tools"
 echo " Ubuntu 24.04"
 echo "======================================"
 
-# Check root privileges
-if [ "$EUID" -ne 0 ]; then
-    echo "Please run this script using sudo."
+# Check root permission
+if [ "$(id -u)" -ne 0 ]; then
+    echo "ERROR: Please execute using sudo"
     exit 1
 fi
 
@@ -37,12 +36,25 @@ case "$ARCH" in
         ;;
 esac
 
-# Update system
+echo "Detected architecture: $ARCH"
+
+# Non-interactive installation
+export DEBIAN_FRONTEND=noninteractive
+
+# ==========================================
+# Step 1: Update package repository
+# ==========================================
+
 echo "Updating package repository..."
+
 apt-get update -y
 
-# Install dependencies and Git
+# ==========================================
+# Step 2: Install dependencies and Git
+# ==========================================
+
 echo "Installing dependencies and Git..."
+
 apt-get install -y \
     git \
     curl \
@@ -52,66 +64,102 @@ apt-get install -y \
     ca-certificates \
     lsb-release
 
-# Install kubectl
+echo "Git installation completed"
+
+# ==========================================
+# Step 3: Install kubectl
+# ==========================================
+
 echo "Installing kubectl..."
 
-KUBECTL_VERSION=$(curl -fsSL https://dl.k8s.io/release/stable.txt)
+KUBECTL_VERSION=$(curl -fsSL \
+    https://dl.k8s.io/release/stable.txt)
 
-curl -fsSLo /tmp/kubectl \
-"https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${BINARY_ARCH}/kubectl"
+echo "Kubectl version: $KUBECTL_VERSION"
+
+curl -fL --retry 3 \
+    "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${BINARY_ARCH}/kubectl" \
+    -o /tmp/kubectl
 
 install -m 0755 /tmp/kubectl /usr/local/bin/kubectl
 
-# Install eksctl
+echo "kubectl installation completed"
+
+# ==========================================
+# Step 4: Install eksctl
+# ==========================================
+
 echo "Installing eksctl..."
 
-EKSCTL_VERSION=$(curl -fsSL \
-https://api.github.com/repos/eksctl-io/eksctl/releases/latest \
-| grep '"tag_name":' \
-| head -n 1 \
-| cut -d '"' -f 4)
+EKSCTL_URL="https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_Linux_${BINARY_ARCH}.tar.gz"
 
-curl -fsSL \
-"https://github.com/eksctl-io/eksctl/releases/download/${EKSCTL_VERSION}/eksctl_Linux_${BINARY_ARCH}.tar.gz" \
--o /tmp/eksctl.tar.gz
+curl -fL --retry 3 \
+    "$EKSCTL_URL" \
+    -o /tmp/eksctl.tar.gz
 
 tar -xzf /tmp/eksctl.tar.gz -C /tmp
 
 install -m 0755 /tmp/eksctl /usr/local/bin/eksctl
 
-# Install Terraform
+echo "eksctl installation completed"
+
+# ==========================================
+# Step 5: Install Terraform
+# ==========================================
+
 echo "Installing Terraform..."
 
-install -m 0755 -d /usr/share/keyrings
+install -d -m 0755 /usr/share/keyrings
 
-curl -fsSL https://apt.releases.hashicorp.com/gpg \
-| gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+curl -fsSL \
+    https://apt.releases.hashicorp.com/gpg \
+    | gpg --dearmor --yes \
+    -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+
+chmod 0644 /usr/share/keyrings/hashicorp-archive-keyring.gpg
 
 echo "deb [arch=${ARCH} signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com noble main" \
-> /etc/apt/sources.list.d/hashicorp.list
+    > /etc/apt/sources.list.d/hashicorp.list
 
 apt-get update -y
 
 apt-get install -y terraform
 
-# Verify installations
+echo "Terraform installation completed"
+
+# ==========================================
+# Step 6: Verify all installations
+# ==========================================
+
 echo ""
 echo "======================================"
-echo " Installation Completed"
+echo " Verifying DevOps Tools"
 echo "======================================"
 
+echo ""
 echo "Git Version:"
 git --version
 
+echo ""
 echo "Kubectl Version:"
 kubectl version --client
 
+echo ""
 echo "Eksctl Version:"
 eksctl version
 
+echo ""
 echo "Terraform Version:"
 terraform version
 
+# ==========================================
+# Step 7: Cleanup
+# ==========================================
+
+rm -f /tmp/kubectl /tmp/eksctl.tar.gz /tmp/eksctl
+
+echo ""
 echo "======================================"
-echo " All DevOps tools installed successfully"
+echo " Installation Completed Successfully"
 echo "======================================"
+
