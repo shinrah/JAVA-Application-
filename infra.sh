@@ -3,6 +3,13 @@
 
 set -e
 
+if [ "$(id -u)" -ne 0 ]; then
+    echo "Please run this script using sudo"
+    exit 1
+fi
+
+set -e
+
 echo "======================================"
 echo " Installing DevOps Tools"
 echo " Ubuntu 24.04"
