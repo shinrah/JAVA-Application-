@@ -84,7 +84,7 @@
         name: "{{ sonarqube_container }}"
         image: "{{ sonarqube_image }}"
         state: started
-        pull: always
+        pull: true
         restart_policy: unless-stopped
 
         published_ports:
