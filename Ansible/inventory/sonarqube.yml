@@ -1,117 +1,46 @@
 
 ---
-- name: Install and Configure SonarQube
+- name: Install SonarQube on Ubuntu
   hosts: sonarqube
   become: true
-  gather_facts: true
-
-  vars:
-    sonarqube_image: "sonarqube:community"
-    sonarqube_container: "sonarqube"
+  gather_facts: false
 
   tasks:
-
-    # ---------------------------------------
-    # Step 1: Update Ubuntu packages
-    # ---------------------------------------
 
     - name: Update apt repository
       ansible.builtin.apt:
         update_cache: true
-        cache_valid_time: 3600
-
-    # ---------------------------------------
-    # Step 2: Install Docker
-    # ---------------------------------------
 
     - name: Install Docker
       ansible.builtin.apt:
-        name:
-          - docker.io
+        name: docker.io
         state: present
 
-    - name: Start and enable Docker service
-      ansible.builtin.systemd:
+    - name: Start Docker service
+      ansible.builtin.service:
         name: docker
         state: started
         enabled: true
 
-    # ---------------------------------------
-    # Step 3: Configure SonarQube
-    # Elasticsearch requirements
-    # ---------------------------------------
+    - name: Configure SonarQube kernel parameter
+      ansible.builtin.sysctl:
+        name: vm.max_map_count
+        value: "524288"
+        state: present
+        reload: true
 
-    - name: Configure SonarQube kernel parameters
-      ansible.builtin.copy:
-        dest: /etc/sysctl.d/99-sonarqube.conf
-        content: |
-          vm.max_map_count=524288
-          fs.file-max=131072
-        owner: root
-        group: root
-        mode: '0644'
-
-    - name: Apply kernel parameters
+    - name: Pull SonarQube image
       ansible.builtin.command:
-        cmd: sysctl --system
+        cmd: docker pull sonarqube:community
       changed_when: false
 
-    # ---------------------------------------
-    # Step 4: Create Docker volumes
-    # ---------------------------------------
-
-    - name: Create SonarQube data volume
-      community.docker.docker_volume:
-        name: sonarqube_data
-        state: present
-
-    - name: Create SonarQube extensions volume
-      community.docker.docker_volume:
-        name: sonarqube_extensions
-        state: present
-
-    - name: Create SonarQube logs volume
-      community.docker.docker_volume:
-        name: sonarqube_logs
-        state: present
-
-    # ---------------------------------------
-    # Step 5: Run SonarQube container
-    # ---------------------------------------
+    - name: Check if SonarQube container exists
+      ansible.builtin.command:
+        cmd: docker ps -a --filter name=^sonarqube$ --format {% raw %}'{{.Names}}'{% endraw %}
+      register: sonarqube_container
+      changed_when: false
 
     - name: Start SonarQube container
-      community.docker.docker_container:
-        name: "{{ sonarqube_container }}"
-        image: "{{ sonarqube_image }}"
-        state: started
-        pull: true
-        restart_policy: unless-stopped
-
-        published_ports:
-          - "9000:9000"
-
-        volumes:
-          - sonarqube_data:/opt/sonarqube/data
-          - sonarqube_extensions:/opt/sonarqube/extensions
-          - sonarqube_logs:/opt/sonarqube/logs
-
-        ulimits:
-          - "nofile:131072:131072"
-          - "nproc:8192:8192"
-
-    # ---------------------------------------
-    # Step 6: Wait for SonarQube
-    # ---------------------------------------
-
-    - name: Wait for SonarQube port 9000
-      ansible.builtin.wait_for:
-        port: 9000
-        host: 127.0.0.1
-        delay: 15
-        timeout: 600
-        state: started
-
-    - name: SonarQube installation completed
-      ansible.builtin.debug:
-        msg: "SonarQube is running on port 9000"
-
+      ansible.builtin.command:
+        cmd: docker run -d --name sonarqube --restart unless-stopped -p 9000:9000 sonarqube:community
+      when: sonarqube_container.stdout == ""
