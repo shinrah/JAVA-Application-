@@ -187,6 +187,18 @@ sudo apt install -y ansible-core
 sudo chmod 777 /var/run/docker.sock
 sudo usermod -aG docker jenkins
 #============================================
+# Step 9: Docker trivy installation 
+#============================================
+# Install Trivy
+apt-get update -y
+apt-get install -y wget gnupg
+wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor -o /usr/share/keyrings/trivy.gpg
+echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" > /etc/apt/sources.list.d/trivy.list
+apt-get update -y
+apt-get install -y trivy
+trivy --version
+#============================================
+
 echo "Installing Ansible Docker collection..."
 
 ansible-galaxy collection install community.docker
