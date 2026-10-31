@@ -32,7 +32,10 @@ data "aws_ami" "ubuntu" {
 # ==========================================
 
 resource "aws_instance" "sonarqube" {
-
+  for_each = {
+    jenkins = "Jenkins-Server"
+    sonarqube = "SonarQube-Server"
+   }
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
 
@@ -55,7 +58,7 @@ resource "aws_instance" "sonarqube" {
   }
 
   tags = {
-    Name        = "SonarQube-Server"
+    Name        = each.value
     Environment = var.environment
     Application = "SonarQube"
     ManagedBy   = "Terraform"
