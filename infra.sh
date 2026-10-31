@@ -172,7 +172,10 @@ terraform version
 # ==========================================
 # Step 8: Install Ansible Docker Collection
 # ==========================================
-
+echo "installing ansible"
+sudo apt update -y
+sudo apt install -y ansible-core
+#============================================
 echo "Installing Ansible Docker collection..."
 
 ansible-galaxy collection install community.docker
