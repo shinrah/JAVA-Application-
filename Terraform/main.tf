@@ -33,7 +33,7 @@ data "aws_ami" "ubuntu" {
 
 resource "aws_instance" "sonarqube" {
   for_each = {
-    jenkins = "Jenkins-Server"
+    Nexus = "Nexus-Server"
     sonarqube = "SonarQube-Server"
    }
   ami           = data.aws_ami.ubuntu.id
