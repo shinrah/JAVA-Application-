@@ -1,0 +1,65 @@
+
+---
+- name: Install Nexus Repository
+  hosts: nexus
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Update apt repository
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Install Docker
+      ansible.builtin.apt:
+        name: docker.io
+        state: present
+
+    - name: Start Docker service
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Configure swap file (4 GB)
+      ansible.builtin.command:
+        cmd: fallocate -l 4G /swapfile
+        creates: /swapfile
+
+    - name: Set swap permissions
+      ansible.builtin.file:
+        path: /swapfile
+        mode: '0600'
+
+    - name: Format swap
+      ansible.builtin.command:
+        cmd: mkswap /swapfile
+      when: ansible_facts is not defined
+
+    - name: Enable swap
+      ansible.builtin.command:
+        cmd: swapon /swapfile
+      when: ansible_facts is not defined
+
+    - name: Add swap to fstab
+      ansible.builtin.mount:
+        name: none
+        src: /swapfile
+        fstype: swap
+        opts: sw
+        state: present
+
+    - name: Pull Nexus image
+      ansible.builtin.command:
+        cmd: docker pull sonatype/nexus3:latest
+
+    - name: Check Nexus container
+      ansible.builtin.command:
+        cmd: docker ps -a --filter name=^nexus$ --format '{{.Names}}'
+      register: nexus_container
+      changed_when: false
+
+    - name: Start Nexus container
+      ansible.builtin.command:
+        cmd: docker run -d --name nexus --restart unless-stopped -p 8081:8081 sonatype/nexus3:latest
+      when: nexus_container.stdout == ""
