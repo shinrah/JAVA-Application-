@@ -176,7 +176,7 @@ echo "======================================"
 apt-get update && apt-get install -y unzip curl
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
 unzip -q  -o /tmp/awscliv2.zip -d /tmp
-/tmp/aws/install
+/tmp/aws/install --update
 aws --version 
 # ==========================================
 # Step 8: Install Ansible Docker Collection
