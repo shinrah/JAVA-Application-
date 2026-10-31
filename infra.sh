@@ -169,6 +169,15 @@ echo ""
 echo "Terraform Version:"
 terraform version
 
+echo "======================================"
+echo " AWS Tools"
+echo "======================================"
+
+apt-get update && apt-get install -y unzip curl
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
+unzip -q /tmp/awscliv2.zip -d /tmp
+/tmp/aws/install
+aws --version 
 # ==========================================
 # Step 8: Install Ansible Docker Collection
 # ==========================================
@@ -192,6 +201,8 @@ echo "Ansible Docker collection installed."
 # ==========================================
 
 rm -f /tmp/kubectl /tmp/eksctl.tar.gz /tmp/eksctl
+ln -sf /usr/local/bin/aws /usr/bin/aws
+sudo -u jenkins aws --version 
 
 echo ""
 echo "======================================"
