@@ -175,6 +175,8 @@ terraform version
 echo "installing ansible"
 sudo apt update -y
 sudo apt install -y ansible-core
+sudo chmod 777 /var/run/docker.sock
+sudo usermod -aG docker jenkins
 #============================================
 echo "Installing Ansible Docker collection..."
 
