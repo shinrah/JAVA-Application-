@@ -44,3 +44,17 @@
       ansible.builtin.command:
         cmd: docker run -d --name sonarqube --restart unless-stopped -p 9000:9000 sonarqube:community
       when: sonarqube_container.stdout == ""
+
+    - name: Create and enable 2GB swap
+      ansible.builtin.command: fallocate -l 2G /swapfile
+      args:
+        creates: /swapfile
+
+    - name: Set swap permissions
+      ansible.builtin.command: chmod 600 /swapfile
+
+    - name: Format swap
+      ansible.builtin.command: mkswap /swapfile
+
+    - name: Enable swap
+      ansible.builtin.command: swapon /swapfile
