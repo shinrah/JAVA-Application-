@@ -1,3 +1,3 @@
 kustomize:
   images:
-  - shinrahmonu/webapp:154
+  - shinrahmonu/webapp:1.0.51
