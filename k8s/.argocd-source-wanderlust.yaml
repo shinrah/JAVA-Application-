@@ -1,3 +1,0 @@
-kustomize:
-  images:
-  - shinrahmonu/webapp:1.0.51
